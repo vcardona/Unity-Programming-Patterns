@@ -374,4 +374,4 @@ namespace CommandPattern
 ```
 
 Todo el contenido fue traducido de la siguiente página: [Habrador](https://www.habrador.com/tutorials/programming-patterns/1-command-pattern/)
-    }
+    
