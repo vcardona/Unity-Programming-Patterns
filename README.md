@@ -2,15 +2,15 @@
 
 ### Un ejercicio de programación sobre como implementar patrones de programación en videojuegos.
 
-En este tutorial se explica sobre los patrones de programación en Unity con C#, esta es la explicación que da Wikipedia sobre que es un patron de programación para los que no esten relacionados con el termino:
+En este tutorial se explican algunos de los patrones de programación en Unity con C#, esta es la explicación que da Wikipedia sobre que es un patron de programación para los que no esten relacionados con el termino:
 
-En ingenieria de software, un patron de diseño de software es una solución reusable para un problema que ocurre comunmente en un contexto especifico en el diseño de software. No es un diseño final que puede ser transformado directamente en código o lenguaje maquina. Es una descripción o template sobre como podemos resolver un problema, el cual puede ser usado en diferentes situaciones. Los patrones de diseño son buenas practicas que un programados puedes usar par resolver un problema común cuando de diseña una aplicación o un sistema.
+En ingenieria de software, un patron de diseño de software es una solución reusable para un problema que ocurre comunmente en un contexto especifico en el diseño de software. No es un diseño final que puede ser transformado directamente en código o lenguaje maquina. Es una descripción o template sobre como podemos resolver un problema, el cual puede ser usado en diferentes situaciones. Los patrones de diseño son buenas practicas que un programador puedes usar par resolver un problema común cuando de diseña una aplicación o un sistema.
 
 ## Command Pattern
 
 En programación orientada a objetos, el Command Pattern es un patron de diseño de comportamiento en el cual un objeto es usado para encapsular toda la información necesaria para ejecutar una acción o activar algún evento en otro momento. Esta información incluye el nombre del método, el objeto que es propietario del método y los valores de los parametros del método.
 
-Un ejemplo donde el Command Pattern es realmente útil, es cuando le damos la opción a nuestros usuarios de cambiar los controler del juego, en Unity podemos escribir una función similar a esta:
+Un ejemplo donde el Command Pattern es realmente útil, es cuando le damos la opción a nuestros usuarios de cambiar los controles del juego, en Unity podemos escribir una función similar a esta:
 ```csharp
 if (Input.GetKeyDown(KeyCode.A))
 {
@@ -25,7 +25,7 @@ public abstract class Command
 	public abstract void Execute();
 }
 ```
-Luego FireWeapon hereda de la clase base. Neccesitamos una clase que no haga nada, de esta forma podemos hacer el Switch entre la U y la A cuando se dispare el arma.
+Luego FireWeapon hereda de la clase base. Necesitamos una clase que no haga nada, de esta forma podemos hacer el Switch entre la U y la A cuando se dispare el arma.
 
 ```csharp
 public class FireWeapon : Command
@@ -57,13 +57,13 @@ if (Input.GetKeyDown(KeyCode.A))
 	buttonA.Execute(); //No hace nada por que el método Execute() en la clase DoNothing esta vacio.
 }
 ```
-Pero esto no es todo, Si estamos salvando los commands, estamos enviandolos a una lista, entonces podemos deshacer los commands. Digamos por ejemplo que tenemos una editor de niveles, en el cual estamos poniendo arboles. Luego podemos usar el Command Pattern para deshacer el ultimo o todos los comando en el caso que ubiquemos alguno en una posición erronea.
+Pero esto no es todo, Si estamos salvando los commands, estamos enviandolos a una lista, entonces podemos deshacer los commands. Digamos por ejemplo que tenemos una editor de niveles, en el cual estamos poniendo arboles. Luego podemos usar el Command Pattern para deshacer el ultimo o todos los comandos en el caso que ubiquemos alguno en una posición erronea.
 
 Al usar la misma lista cuando deshacemos algo podemos crear una función que haga un replay, si recordamos la posición inicial, simplemente recorremos los commands que salvamos y Unity va a reproducir todo lo que hicimos. Esta es una buena forma de salvar la posición y la orientación en cada frame de todos nuestros objetos en la escena, luego repetir las posiciones haciendo un loop en la lista.
 
 ### El Command Pattern en Unity
 
-La idea en este script es que tenemos un box gameobject, luego podemos mover la caja usando las teclas WASD, pero gracias al command pattern podemos deshacer los moviemientos con la tecla Z, luego reproducir todos los movimientos desde el principio con la tecla R.
+La idea en este script es que tenemos un box gameobject, luego podemos mover la caja usando las teclas WASD, pero gracias al command pattern podemos deshacer los movimientos con la tecla Z, luego reproducir todos los movimientos desde el principio con la tecla R.
 
 Lo que se necesita en la escena es una caja y un objeto vacio, agregamos el script InputHandler.cs al objeto vacio y agregamos la caja al espacio definido en el script. Con esto debe funcionar el ejemplo.
 
