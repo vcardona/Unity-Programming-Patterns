@@ -2,13 +2,13 @@
 
 ### Un ejercicio de programación sobre como implementar patrones de programación en videojuegos.
 
-En este tutorial se explican algunos de los patrones de programación en Unity con C#, esta es la explicación que da Wikipedia sobre que es un patron de programación para los que no esten relacionados con el termino:
+En este tutorial se explican algunos de los patrones de programación en Unity con C#, esta es la explicación que da Wikipedia sobre que es un patrón de programación para los que no esten relacionados con el termino:
 
-En ingenieria de software, un patron de diseño de software es una solución reusable para un problema que ocurre comunmente en un contexto especifico en el diseño de software. No es un diseño final que puede ser transformado directamente en código o lenguaje maquina. Es una descripción o template sobre como podemos resolver un problema, el cual puede ser usado en diferentes situaciones. Los patrones de diseño son buenas practicas que un programador puedes usar par resolver un problema común cuando de diseña una aplicación o un sistema.
+En ingenieria de software, un patrón de diseño de software es una solución reusable para un problema que ocurre comunmente en un contexto especifico en el diseño de software. No es un diseño final que puede ser transformado directamente en código o lenguaje maquina. Es una descripción o template sobre como podemos resolver un problema, el cual puede ser usado en diferentes situaciones. Los patrones de diseño son buenas practicas que un programador puedes usar par resolver un problema común cuando de diseña una aplicación o un sistema.
 
 ## Command Pattern
 
-En programación orientada a objetos, el Command Pattern es un patron de diseño de comportamiento en el cual un objeto es usado para encapsular toda la información necesaria para ejecutar una acción o activar algún evento en otro momento. Esta información incluye el nombre del método, el objeto que es propietario del método y los valores de los parametros del método.
+En programación orientada a objetos, el Command Pattern es un patrón de diseño de comportamiento en el cual un objeto es usado para encapsular toda la información necesaria para ejecutar una acción o activar algún evento en otro momento. Esta información incluye el nombre del método, el objeto que es propietario del método y los valores de los parametros del método.
 
 Un ejemplo donde el Command Pattern es realmente útil, es cuando le damos la opción a nuestros usuarios de cambiar los controles del juego, en Unity podemos escribir una función similar a esta:
 ```csharp
