@@ -480,6 +480,212 @@ Luego de hacer esto, ejecutamos de nuevo nuestro código en Unity, abrimos el pr
 
 ![](ProfilerCon.png)
 
+## Observer Pattern
+
+El patrón Observer es un patrón de diseño de software en el cual un objeto, llamado subject, mantiene una lista de sus dependientes, llamados observers, estos son notificados automáticamente cuando algún estado cambia, usualmente llamando alguno de sus métodos.
+
+La idea básicamente es que podemos usar el observer pattern cuando necesitamos que muchos objetos reciban una actualización cuando otro objeto cambia. El observer pattern es actualmente la columna vertebral de muchos programas y aplicaciones, por eso es importante conocerlo.
+
+Uno de los ejemplos es cuando tenemos logros o achievements en nuestro juego, esto puede ser un poco complicado para implementar si tenemos muchos logros y cada uno se desbloquea por medio de un comportamiento diferente, pero es mucho más fácil de implementar si conocemos el observer pattern.
+
+Para ver el funcionamiento del Observer Pattern en Unity, tenemos tres boxes que van a saltar cuando una esfera esté cerca del centro del mapa.
+
+![](ObserverPAttern.png)
+
+Cada caja debe tener un rigidbody agregado para poder que salte, luego necesitamos un objeto vacío llamado _GameController que va a contener el Script GameController que va estar pendiente de todo.
+
+El script del GameController se ve de la siguiente forma:
+
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace ObserverPattern
+{
+    public class GameController : MonoBehaviour
+    {
+        public GameObject sphereObj;
+        //The boxes that will jump
+        public GameObject box1Obj;
+        public GameObject box2Obj;
+        public GameObject box3Obj;
+
+        //Will send notifications that something has happened to whoever is interested
+        Subject subject = new Subject();
+
+
+        void Start()
+        {
+            //Create boxes that can observe events and give them an event to do
+            Box box1 = new Box(box1Obj, new JumpLittle());
+            Box box2 = new Box(box2Obj, new JumpMedium());
+            Box box3 = new Box(box3Obj, new JumpHigh());
+
+            //Add the boxes to the list of objects waiting for something to happen
+            subject.AddObserver(box1);
+            subject.AddObserver(box2);
+            subject.AddObserver(box3);
+        }
+
+
+        void Update()
+        {
+            //The boxes should jump if the sphere is cose to origo
+            Debug.Log((sphereObj.transform.position).magnitude);
+            if ((sphereObj.transform.position).magnitude < 7f)
+            {
+                subject.Notify();
+            }
+        }
+    }
+}
+
+```
+
+El observer pattern básico se compone en dos partes:
+
+* El Subject contiene la lista de todos los observers interesados en obtener información cuando algo sucede, cuando ocurre algún evento, este envía la información a todos los interesados.
+* Los observers son los objetos interesados en hacer algo cuando el evento ocurre.
+
+El siguiente script es la clase subject que envía la información a los observers:
+
+### Subject Script
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace ObserverPattern
+{
+    //Invokes the notificaton method
+    public class Subject
+    {
+        //A list with observers that are waiting for something to happen
+        List<Observer> observers = new List<Observer>();
+
+        //Send notifications if something has happened
+        public void Notify()
+        {
+            for (int i = 0; i < observers.Count; i++)
+            {
+                //Notify all observers even though some may not be interested in what has happened
+                //Each observer should check if it is interested in this event
+                observers[i].OnNotify();
+            }
+        }
+
+        //Add observer to the list
+        public void AddObserver(Observer observer)
+        {
+            observers.Add(observer);
+            
+        }
+
+        //Remove observer from the list
+        public void RemoveObserver(Observer observer)
+        {
+        }
+    }
+}
+
+```
+### Observer Script
+
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace ObserverPattern
+{
+    //Wants to know when another object does something interesting 
+    public abstract class Observer
+    {
+        public abstract void OnNotify();
+    }
+
+    public class Box : Observer
+    {
+        //The box gameobject which will do something
+        GameObject boxObj;
+        //What will happen when this box gets an event
+        BoxEvents boxEvent;
+
+        public Box(GameObject boxObj, BoxEvents boxEvent)
+        {
+            this.boxObj = boxObj;
+            this.boxEvent = boxEvent;
+        }
+
+        //What the box will do if the event fits it (will always fit but you will probably change that on your own)
+        public override void OnNotify()
+        {
+            Jump(boxEvent.GetJumpForce());
+            
+        }
+
+        //The box will always jump in this case
+        void Jump(float jumpForce)
+        {
+            //If the box is close to the ground
+            if (boxObj.transform.position.y < 2f)
+            {
+                boxObj.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpForce);
+                
+                
+            }
+        }
+    }
+}
+```
+### BoxEvents Script
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace ObserverPattern
+{
+    //Events
+    public abstract class BoxEvents
+    {
+        public abstract float GetJumpForce();
+    }
+
+
+    public class JumpLittle : BoxEvents
+    {
+        public override float GetJumpForce()
+        {
+            return 30f;
+        }
+    }
+
+
+    public class JumpMedium : BoxEvents
+    {
+        public override float GetJumpForce()
+        {
+            return 60f;
+        }
+    }
+
+
+    public class JumpHigh : BoxEvents
+    {
+        public override float GetJumpForce()
+        {
+            return 90f;
+        }
+    }
+}
+```
+Para configurar toda la escena y que funcione agregamos el script _GameController a un empty, luego agregamos al _GameController en el espacio de las variables definidas, la esfera y los tres cubos. Cada uno de los scripts que están en el ejemplo deben estar agregados en Unity, no se deben agregar a ninguno de los elementos en la escena, si vemos el código del _GameController el realiza esta tarea. 
+
+Luego ejecutamos y movemos en la escena la esfera, hasta que su  magnitud sea menor de 7, para permitir que se muevan los cubos, podemos verificar en la consola el valor de la magnitud de la esfera para saber en que valor esta y poder activar el movimiento de los cubos.
+
+
 
 Todo el contenido fue traducido de la siguiente página: [Habrador](https://www.habrador.com/tutorials/programming-patterns/1-command-pattern/)
     
