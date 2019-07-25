@@ -6,7 +6,7 @@ En este tutorial se explican algunos de los patrones de programación en Unity c
 
 En ingenieria de software, un patrón de diseño de software es una solución reusable para un problema que ocurre comunmente en un contexto especifico en el diseño de software. No es un diseño final que puede ser transformado directamente en código o lenguaje maquina. Es una descripción o template sobre como podemos resolver un problema, el cual puede ser usado en diferentes situaciones. Los patrones de diseño son buenas practicas que un programador puedes usar par resolver un problema común cuando de diseña una aplicación o un sistema.
 
-## Command Pattern
+## 01 - Command Pattern
 
 En programación orientada a objetos, el Command Pattern es un patrón de diseño de comportamiento en el cual un objeto es usado para encapsular toda la información necesaria para ejecutar una acción o activar algún evento en otro momento. Esta información incluye el nombre del método, el objeto que es propietario del método y los valores de los parametros del método.
 
@@ -372,6 +372,114 @@ namespace CommandPattern
     }
 }
 ```
+## 02 - Flyweight Pattern
+
+Un Patrón Flyweight es un objeto que minimiza el uso de la memoria, compartiendo la mayor cantidad de datos posibles con otros objetos similares, es una forma de usar objetos en gran cantidad, cuando una simple representación repetida utiliza una cantidad inaceptable de memoria.
+
+La idea básica es que, si tenemos una gran cantidad de objetos en nuestro juego, existe una gran probabilidad que se pueda incrementar el rendimiento de nuestro juego, haciendo estos objetos mucho más livianos. Para que esto funcione nuestros objetos deben compartir la mayor cantidad de datos que son similares para todos los objetos. Si ellos comparten algún dato, entonces podemos crear el dato una sola vez y luego almacenar una referencia a este dato en el objeto. Puede sonar un poco complicado pero es algo sencillo.
+
+Un ejemplo en el cual se puede aplicar el uso de este patrons es si estamos creando un nivel y agregamos árboles, cada árbol es igual que los otros, hay algo que comparten en común, tienen la misma maya y la misma textura, lo único que no comparten es la posición. 
+
+Ahora veamos como implementar el patrón Flyweight, para este ejemplo utilizamos Aliens con miles de ojos, brazos y piernas, para esto necesitamos una clase alien que describa el alien.
+
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace FlyweightPattern
+{
+    //Class that includes lists with position of body parts
+    public class Alien
+    {
+        public List<Vector3> eyePositions;
+        public List<Vector3> legPositions;
+        public List<Vector3> armPositions;
+    }
+}
+```
+Creamos los aliens y generamos nuevas posiciones para cada parte del cuerpo de cada Alien.
+
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+//Flyweight design pattern main class
+namespace FlyweightPattern
+{
+    public class Flyweight : MonoBehaviour
+    {
+        //The list that stores all aliens
+        List<Alien> allAliens = new List<Alien>();
+
+        List<Vector3> eyePositions;
+        List<Vector3> legPositions;
+        List<Vector3> armPositions;
+
+
+        void Start()
+        {
+            //List used when flyweight is enabled
+            eyePositions = GetBodyPartPositions();
+            legPositions = GetBodyPartPositions();
+            armPositions = GetBodyPartPositions();
+
+            //Create all aliens
+            for (int i = 0; i < 10000; i++)
+            {
+                Alien newAlien = new Alien();
+
+                //Add eyes and leg positions
+
+                //Sin el flyweight
+                newAlien.eyePositions = GetBodyPartPositions();
+                newAlien.armPositions = GetBodyPartPositions();
+                newAlien.legPositions = GetBodyPartPositions();
+
+                //Con el flyweight
+                //newAlien.eyePositions = eyePositions;
+                //newAlien.armPositions = legPositions;
+                //newAlien.legPositions = armPositions;
+
+                allAliens.Add(newAlien);
+            }
+        }
+
+
+        //Generate a list with body part positions
+        List<Vector3> GetBodyPartPositions()
+        {
+            //Create a new list
+            List<Vector3> bodyPartPositions = new List<Vector3>();
+
+            //Add body part positions to the list
+            for (int i = 0; i < 1000; i++)
+            {
+                bodyPartPositions.Add(new Vector3());
+            }
+
+            return bodyPartPositions;
+        }
+    }
+}
+```
+Para ver lo que hace nuestro código y el patrón que estamos implementando, agregamos el Flyweight.cs a un objeto vacío, presionamos play en Unity y abrimos el profiler, luego vamos a la sección Memory, vamos a ver la siguiente imagen.
+
+
+![](ProfilerSin.png)
+
+
+La parte donde debemos poner atención es Mono, como podemos leer en este [link](https://docs.unity3d.com/Manual/ProfilerMemory.html), Unity explica que es el “total heap size and used heap size used by Managed Code - this memory is garbage collected” actualmente está más o menos en 484.1MB, este número es el que vamos a reducir usando el Flyweight Pattern.
+
+Para agregar el Flyweight Pattern, asumimos que cada Alien tiene la misma posición para cada una de las partes de su cuerpo, puede que no sea realista, pero lo que estamos haciendo es una prueba sobre como funciona este patrón, para ver su funcionamiento comentamos la sección que dice “Sin el flyweight: y descomentamos la que dice “Con flyweight”, podemos ver el ejemplo en la siguiente imagen.
+
+![](SinFlyweight.png)
+
+Luego de hacer esto, ejecutamos de nuevo nuestro código en Unity, abrimos el profiler y vamos de nuevo a la sección Memory, revisamos de nuevo donde dice Mono, y podemos ver como se redujo considerablemente a 14.3 MB.
+
+![](ProfilerCon.png)
+
 
 Todo el contenido fue traducido de la siguiente página: [Habrador](https://www.habrador.com/tutorials/programming-patterns/1-command-pattern/)
     
