@@ -28,15 +28,16 @@ namespace FlyweightPattern
                 Alien newAlien = new Alien();
 
                 //Add eyes and leg positions
-                //Without flyweight
-                //newAlien.eyePositions = GetBodyPartPositions();
-                //newAlien.armPositions = GetBodyPartPositions();
-                //newAlien.legPositions = GetBodyPartPositions();
 
-                //With flyweight
-                newAlien.eyePositions = eyePositions;
-                newAlien.armPositions = legPositions;
-                newAlien.legPositions = armPositions;
+                //Sin el flyweight
+                newAlien.eyePositions = GetBodyPartPositions();
+                newAlien.armPositions = GetBodyPartPositions();
+                newAlien.legPositions = GetBodyPartPositions();
+
+                //Con el flyweight
+                //newAlien.eyePositions = eyePositions;
+                //newAlien.armPositions = legPositions;
+                //newAlien.legPositions = armPositions;
 
                 allAliens.Add(newAlien);
             }
