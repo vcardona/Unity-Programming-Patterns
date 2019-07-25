@@ -685,7 +685,7 @@ Para configurar toda la escena y que funcione agregamos el script _GameControlle
 
 Luego ejecutamos y movemos en la escena la esfera, hasta que su  magnitud sea menor de 7, para permitir que se muevan los cubos, podemos verificar en la consola el valor de la magnitud de la esfera para saber en que valor esta y poder activar el movimiento de los cubos.
 
-![](observergif.gif)
+![](Observergif.gif)
 
 
 
