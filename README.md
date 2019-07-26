@@ -480,7 +480,7 @@ Luego de hacer esto, ejecutamos de nuevo nuestro código en Unity, abrimos el pr
 
 ![](ProfilerCon.png)
 
-## Observer Pattern
+## 03 - Observer Pattern
 
 El patrón Observer es un patrón de diseño de software en el cual un objeto, llamado subject, mantiene una lista de sus dependientes, llamados observers, estos son notificados automáticamente cuando algún estado cambia, usualmente llamando alguno de sus métodos.
 
@@ -687,6 +687,315 @@ Luego ejecutamos y movemos en la escena la esfera, hasta que su  magnitud sea me
 
 ![](Observergif.gif)
 
+## 04 - State Pattern
+
+El State Pattern, es una patrón de diseño de Software de comportamiento, este patrón es usado en programación para encapsular un comportamiento variable para el mismo objeto, basado en su estado interno.
+
+La idea del patrón es que lo que estamos tratando de controlar tiene diferentes estados, si tenemos un carro este se puede manejar, frenar, reversar o puede esta parqueado, para escribir este comportamiento de un carro en código no es muy sencillo como se pueda pensar. Si el carro avanza al frente y frenamos, luego no queremos que reverse si el botón del freno y la reversa son el mismo. Qué sucede si estamos reversando y presionando el botón para ir adelante? Debemos frenar o acelerar? Que pasa si tenemos más de 4 estados diferentes? PAra esto necesitamos un state pattern que elimine todos los if else anidado y cada uno de esos estados con un montón de booleanos.
+
+Lo primero que debemos preguntarnos es: Cuáles son todos los posibles estados o situaciones en las cuales el objeto se puede encontrar? La idea de dividir el comportamiento en diferentes estados en los que el objeto puede estar es llamado Finite State Machine o FSM. El objeto puede solamente estar en un estado a la vez, no podemos acelerar y presionar el freno al mismo tiempo.
+
+Es muy común usar enums cuando estamos codificando una máquina de estados en C#, el siguiente código puede dar un ejemplo sobre nuestro carro.
+```csharp
+enum CarFSM
+{
+	Forward,
+	Brake,
+	Reverse,
+	Park
+}
+//Default state
+CarFSM carMode = CarFSM.Park; 
+
+//And then you change the state with something like
+if (carMode == CarFSM.Park && IsPressingGasPedal())
+{
+	carMode = CarFSM.Forward;
+}
+else if (carMode == CarFSM.Forward && IsPressingBrakePedal())
+{
+	carMode == CarFSM.Brake;
+}
+//...and so on
+```
+
+Para ilustrar el State Pattern vamos a crear dos criaturas, un Skeleton y un Creeper, el Skeleton atacará desde una distancia con un arco y una flecha, el Creeper atacará cuando está cerca, si el jugador está lejos de ambos enemigos, van a caminar en direcciones aleatorias esperando que su objetivo está cerca.
+
+Para implementar el State Pattern vamos a crear lo siguiente:
+
+* Un plano que va servir como terreno para los enemigos y el jugador.
+* Una esfera que va ser el jugador que quieren eliminar los enemigos.
+* Una caja verde que va a simbolizar al Creeper.
+* Una caja blanca que simboliza el Skeleton.
+* Un objeto vacío llamado _GameController.
+
+La escena se debe ver de la siguiente forma:
+
+![](ConfigStatePattern.png)
+
+El Script del GameController se ve así:
+
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace StatePattern
+{
+    public class GameController : MonoBehaviour
+    {
+        public GameObject playerObj;
+        public GameObject creeperObj;
+        public GameObject skeletonObj;
+
+        //A list that will hold all enemies
+        List<Enemy> enemies = new List<Enemy>();
+
+
+        void Start()
+        {
+            //Add the enemies we have
+            enemies.Add(new Creeper(creeperObj.transform));
+            enemies.Add(new Skeleton(skeletonObj.transform));
+        }
+
+
+        void Update()
+        {
+            //Update all enemies to see if they should change state and move/attack player
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                enemies[i].UpdateEnemy(playerObj.transform);
+            }
+        }
+    }
+}
+
+```
+
+Nuestro State Pattern consiste en una clase Enemy y dos clases hijas para cada enemy, la idea básica es primero actualizamos el estado del enemigo, que puede ser Attack, Flee, Stroll or Move, esta última en dirección al enemigo para atacar, todo esto verificando si puede cambiar entre un estado o el otro, dependiendo del estado en el cual se encuentre el enemigo. Si el enemigo está rondando y el jugador está a cierta distancia, entonces el enemigo iniciar la cacería del jugador.
+
+La diferencia principal entre el Creeper y el Skeleton is que el Skeleton puede atacar desde una distancia, mientras que el Creeper debe estar muy cerca del jugador para poder atacar. 
+
+La clase Enemy es así:
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace StatePattern
+{
+    //The enemy base class
+    public class Enemy
+    {
+        protected Transform enemyObj;
+
+        //The different states the enemy can be in
+        protected enum EnemyFSM
+        {
+            Attack,
+            Flee,
+            Stroll,
+            MoveTowardsPlayer
+        }
+
+
+        //Update the enemy by giving it a new state
+        public virtual void UpdateEnemy(Transform playerObj)
+        {
+
+        }
+
+
+        //Do something based on a state
+        protected void DoAction(Transform playerObj, EnemyFSM enemyMode)
+        {
+            float fleeSpeed = 10f;
+            float strollSpeed = 1f;
+            float attackSpeed = 5f;
+
+            switch (enemyMode)
+            {
+                case EnemyFSM.Attack:
+                    //Attack player
+                    break;
+                case EnemyFSM.Flee:
+                    //Move away from player
+                    //Look in the opposite direction
+                    enemyObj.rotation = Quaternion.LookRotation(enemyObj.position - playerObj.position);
+                    //Move
+                    enemyObj.Translate(enemyObj.forward * fleeSpeed * Time.deltaTime);
+                    break;
+                case EnemyFSM.Stroll:
+                    //Look at a random position
+                    Vector3 randomPos = new Vector3(Random.Range(0f, 100f), 0f, Random.Range(0f, 100f));
+                    enemyObj.rotation = Quaternion.LookRotation(enemyObj.position - randomPos);
+                    //Move
+                    enemyObj.Translate(enemyObj.forward * strollSpeed * Time.deltaTime);
+                    break;
+                case EnemyFSM.MoveTowardsPlayer:
+                    //Look at the player
+                    enemyObj.rotation = Quaternion.LookRotation(playerObj.position - enemyObj.position);
+                    //Move
+                    enemyObj.Translate(enemyObj.forward * attackSpeed * Time.deltaTime);
+                    break;
+            }
+        }
+    }
+}
+
+```
+
+La clase Skeleton se ve así:
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace StatePattern
+{
+    //The skeleton class
+    public class Skeleton : Enemy
+    {
+        EnemyFSM skeletonMode = EnemyFSM.Stroll;
+
+        float health = 100f;
+
+
+        public Skeleton(Transform skeletonObj)
+        {
+            base.enemyObj = skeletonObj;
+        }
+
+
+        //Update the creeper's state
+        public override void UpdateEnemy(Transform playerObj)
+        {
+            //The distance between the Creeper and the player
+            float distance = (base.enemyObj.position - playerObj.position).magnitude;
+
+            switch (skeletonMode)
+            {
+                case EnemyFSM.Attack:
+                    if (health < 20f)
+                    {
+                        skeletonMode = EnemyFSM.Flee;
+                    }
+                    else if (distance > 6f)
+                    {
+                        skeletonMode = EnemyFSM.MoveTowardsPlayer;
+                    }
+                    break;
+                case EnemyFSM.Flee:
+                    if (health > 60f)
+                    {
+                        skeletonMode = EnemyFSM.Stroll;
+                    }
+                    break;
+                case EnemyFSM.Stroll:
+                    if (distance < 10f)
+                    {
+                        skeletonMode = EnemyFSM.MoveTowardsPlayer;
+                    }
+                    break;
+                case EnemyFSM.MoveTowardsPlayer:
+                    //The skeleton has bow and arrow so can attack from distance
+                    if (distance < 5f)
+                    {
+                        skeletonMode = EnemyFSM.Attack;
+                    }
+                    else if (distance > 15f)
+                    {
+                        skeletonMode = EnemyFSM.Stroll;
+                    }
+                    break;
+            }
+
+            //Move the enemy based on a state
+            DoAction(playerObj, skeletonMode);
+        }
+    }
+}
+
+```
+
+La clase Creeper se ve así:
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace StatePattern
+{
+    //The creeper class
+    public class Creeper : Enemy
+    {
+        EnemyFSM creeperMode = EnemyFSM.Stroll;
+
+        float health = 100f;
+
+
+        public Creeper(Transform creeperObj)
+        {
+            base.enemyObj = creeperObj;
+        }
+
+
+        //Update the creeper's state
+        public override void UpdateEnemy(Transform playerObj)
+        {
+            //The distance between the Creeper and the player
+            float distance = (base.enemyObj.position - playerObj.position).magnitude;
+
+            switch (creeperMode)
+            {
+                case EnemyFSM.Attack:
+                    if (health < 20f)
+                    {
+                        creeperMode = EnemyFSM.Flee;
+                    }
+                    else if (distance > 2f)
+                    {
+                        creeperMode = EnemyFSM.MoveTowardsPlayer;
+                    }
+                    break;
+                case EnemyFSM.Flee:
+                    if (health > 60f)
+                    {
+                        creeperMode = EnemyFSM.Stroll;
+                    }
+                    break;
+                case EnemyFSM.Stroll:
+                    if (distance < 10f)
+                    {
+                        creeperMode = EnemyFSM.MoveTowardsPlayer;
+                    }
+                    break;
+                case EnemyFSM.MoveTowardsPlayer:
+                    if (distance < 1f)
+                    {
+                        creeperMode = EnemyFSM.Attack;
+                    }
+                    else if (distance > 15f)
+                    {
+                        creeperMode = EnemyFSM.Stroll;
+                    }
+                    break;
+            }
+
+            //Move the enemy based on a state
+            DoAction(playerObj, creeperMode);
+        }
+    }
+}
+
+```
+
+Luego de agregar el Script GameController a un GameObject Empty y agregar los elementos en cada una de las variables, ejecutamos y podemos ver su comportamiento, para poder ver cada uno de los estados en funcionamiento lo que debemos hacer es mover nuestra Esfera que hace el papel del player, para que esto active cada uno de los estados de los enemigos.
+
+Vamos a poder ver como el Skeleton se queda un poco alejado del player, mientras que el Creeper se acerca al jugador, cuando nos alejamos empiezan a girar en su punto simulando una ronda o patrullaje.
+
+![](StatePatternExample.gif)
 
 
 Todo el contenido fue traducido de la siguiente página: [Habrador](https://www.habrador.com/tutorials/programming-patterns/1-command-pattern/)
