@@ -685,6 +685,8 @@ Para configurar toda la escena y que funcione agregamos el script _GameControlle
 
 Luego ejecutamos y movemos en la escena la esfera, hasta que su  magnitud sea menor de 7, para permitir que se muevan los cubos, podemos verificar en la consola el valor de la magnitud de la esfera para saber en que valor esta y poder activar el movimiento de los cubos.
 
+![](Observergif.gif)
+
 
 
 Todo el contenido fue traducido de la siguiente página: [Habrador](https://www.habrador.com/tutorials/programming-patterns/1-command-pattern/)
