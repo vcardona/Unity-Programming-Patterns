@@ -997,6 +997,110 @@ Vamos a poder ver como el Skeleton se queda un poco alejado del player, mientras
 
 ![](StatePatternExample.gif)
 
+## SubClass SandBox Pattern
+
+El patrón Subclass Sandbox Pattern describe una idea básica, este es muy útil cuando tenemos varias subclases similares, cuando necesitamos hacer un pequeño cambio, lo que hacemos es cambiar la clase base, mientras que todas las subclases no necesitan ser tocadas. Entonces la clase base provee todas las operaciones a las clases derivadas.
+
+Para este ejemplo solo necesitamos dos scripts, un GameController y un Superpower, el cual va a incluir varias clases.
+
+### GameController Class:
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace SubclassSandbox
+{
+    public class GameController : MonoBehaviour
+    {
+        //A list that will store all superpowers
+        List<Superpower> superPowers = new List<Superpower>();
+
+        void Start()
+        {
+            superPowers.Add(new SkyLaunch());
+            superPowers.Add(new GroundDive());
+        }
+
+        void Update()
+        {
+            //Activate each superpower each update
+            for (int i = 0; i < superPowers.Count; i++)
+            {
+                superPowers[i].Activate();
+            }
+        }
+    }
+}
+
+```
+
+### Superpower Class:
+
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace SubclassSandbox
+{
+    //This is the base class
+    public abstract class Superpower
+    {
+        //This is the sandbox method that a subclass has to have its own version of
+        public abstract void Activate();
+
+        //All of the operations a derived class needs to perform - called from Activate()
+        protected void Move(float speed)
+        {
+            Debug.Log("Moving with speed " + speed);
+        }
+
+        protected void PlaySound(string coolSound)
+        {
+            Debug.Log("Playing sound " + coolSound);
+        }
+
+        protected void SpawnParticles()
+        {
+
+        }
+    }
+
+
+    //Subclasses
+    public class SkyLaunch : Superpower
+    {
+        //Has to have its own version of Activate()
+        public override void Activate()
+        {
+            //Add operations this class has to perform
+            Move(10f);
+            PlaySound("SkyLaunch");
+            SpawnParticles();
+        }
+    }
+
+    public class GroundDive : Superpower
+    {
+        //Has to have its own version of Activate()
+        public override void Activate()
+        {
+            //Add operations this class has to perform
+            Move(15f);
+            PlaySound("GroundDive");
+            SpawnParticles();
+        }
+    }
+}
+
+```
+
+Si agregamos el script GameController a un objeto vacío en Unity y presionamos Play, vamos a ver que no sucede nada, excepto por los mensajes que aparecen en la consola de Unity, con esto podemos ver la idea general de este patrón y cómo implementarlo.
+
+![](ConsoleSubClass.png)
+
+
 
 Todo el contenido fue traducido de la siguiente página: [Habrador](https://www.habrador.com/tutorials/programming-patterns/1-command-pattern/)
     
